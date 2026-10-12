@@ -16,6 +16,7 @@
     "backup:drill": "node scripts/restore-drill.js"
   },
   "dependencies": {
+    "makeitaquote": "^0.3.0",
     "canvafy": "^7.2.1",
     "@discordjs/rest": "^2.6.1",
     "axios": "^1.15.2",
