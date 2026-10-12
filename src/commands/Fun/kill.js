@@ -7,34 +7,33 @@ const phrases = [
   (u, t) => `Rest in peace <@${t.id}>... you had a good run! 🪦`
 ];
 
-// Resolves mention, snowflake ID, or server username/nickname
 async function resolveMember(message, query) {
-  if (!query && (!message.mentions || message.mentions.members.size === 0)) return null;
-
   // 1. Direct @mention
   if (message.mentions?.members?.size > 0) {
     return message.mentions.members.first();
   }
 
-  // 2. Discord User ID (17-20 digits)
-  const cleanId = query.replace(/[<@!>]/g, '');
+  const cleanQuery = (typeof query === 'string' ? query : '').trim();
+  if (!cleanQuery) return null;
+
+  // 2. Discord User ID
+  const cleanId = cleanQuery.replace(/[<@!>]/g, '');
   if (/^\d{17,20}$/.test(cleanId)) {
     const byId = await message.guild.members.fetch(cleanId).catch(() => null);
     if (byId) return byId;
   }
 
-  // 3. Username or Server Nickname (case-insensitive)
-  const search = query.toLowerCase();
+  // 3. Username or Server Nickname search
+  const search = cleanQuery.toLowerCase();
   let found = message.guild.members.cache.find(m =>
     m.user.username.toLowerCase() === search ||
     (m.nickname && m.nickname.toLowerCase() === search) ||
     (m.displayName && m.displayName.toLowerCase() === search)
   );
 
-  // Fallback: search guild via API fetch if not cached
   if (!found) {
     try {
-      const fetched = await message.guild.members.fetch({ query, limit: 1 });
+      const fetched = await message.guild.members.fetch({ query: cleanQuery, limit: 1 });
       found = fetched.first();
     } catch {}
   }
@@ -48,7 +47,7 @@ export default {
     .setDescription('Dramatically eliminate another member!')
     .addUserOption(opt => opt.setName('target').setDescription('Member to eliminate').setRequired(true)),
 
-  async execute(context, args) {
+  async execute(context) {
     const isInteraction = Boolean(context.isChatInputCommand?.());
     const author = isInteraction ? context.user : context.author;
 
@@ -62,8 +61,9 @@ export default {
         if (user) targetMember = await context.guild.members.fetch(user.id).catch(() => null);
       }
     } else {
-      // Prefix execution (mmkill <target>)
-      const targetQuery = Array.isArray(args) ? args[0] : (args || '').trim();
+      // Safely extract the target word directly from message text
+      const words = (context.content || '').trim().split(/\s+/);
+      const targetQuery = words.slice(1).join(' ').trim();
 
       if (!targetQuery && (!context.mentions || context.mentions.members.size === 0)) {
         return context.reply('⚠️ Please specify who to eliminate! (e.g. `mmkill @user`)');
@@ -71,17 +71,17 @@ export default {
 
       targetMember = await resolveMember(context, targetQuery);
 
-      // Halt immediately if no matching member exists
       if (!targetMember) {
         return context.reply(`❌ Could not find any member matching **"${targetQuery}"** in this server.`);
       }
     }
 
-    // Prevent self-elimination
     if (targetMember.id === author.id) {
       const msg = "You can't eliminate yourself! Stay alive! 🛡️";
       return isInteraction ? context.editReply(msg) : context.reply(msg);
     }
+
+    const targetUser = targetMember.user || targetMember;
 
     try {
       const endpoint = Math.random() > 0.5 ? 'shoot' : 'yeet';
@@ -89,14 +89,14 @@ export default {
         headers: { 'User-Agent': 'TitanBot/1.0 (DiscordBot)' }
       });
       const data = await res.json();
-      const gifUrl = data.results[0]?.url;
+      const gifUrl = data.results?.[0]?.url;
 
-      const line = phrases[Math.floor(Math.random() * phrases.length)](author, targetMember.user);
+      const line = phrases[Math.floor(Math.random() * phrases.length)](author, targetUser);
 
       const embed = new EmbedBuilder()
         .setColor('#e74c3c')
         .setDescription(line)
-        .setImage(gifUrl);
+        .setImage(gifUrl || null);
 
       if (isInteraction) {
         await context.editReply({ embeds: [embed] });
@@ -104,7 +104,7 @@ export default {
         await context.channel.send({ embeds: [embed] });
       }
     } catch {
-      const fallback = `*eliminated* <@${targetMember.id}>! 💀`;
+      const fallback = `*eliminated* <@${targetUser.id}>! 💀`;
       if (isInteraction) await context.editReply(fallback);
       else await context.channel.send(fallback);
     }
