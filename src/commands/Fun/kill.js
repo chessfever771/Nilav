@@ -23,7 +23,7 @@ export default {
 
     try {
       // nekos.best doesn't have "kill", but "shoot" and "yeet" match the vibe
-      const endpoint = Math.random() > 0.5 ? 'shoot' : 'yeet' : 'punch';
+      const endpoint = Math.random() > 0.5 ? 'shoot' : 'yeet' ;
       const res = await fetch(`https://nekos.best/api/v2/${endpoint}`, {
         headers: { 'User-Agent': 'TitanBot/1.0 (DiscordBot)' }
       });
