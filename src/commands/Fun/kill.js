@@ -8,37 +8,61 @@ const phrases = [
 ];
 
 async function resolveMember(message, query) {
-  // 1. Direct @mention
+  if (!message.guild) return null;
+
+  // 1. Direct @mention (check members, then fallback to users)
   if (message.mentions?.members?.size > 0) {
     return message.mentions.members.first();
+  }
+  if (message.mentions?.users?.size > 0) {
+    const mentionedUser = message.mentions.users.first();
+    const fetched = await message.guild.members.fetch(mentionedUser.id).catch(() => null);
+    if (fetched) return fetched;
   }
 
   const cleanQuery = (typeof query === 'string' ? query : '').trim();
   if (!cleanQuery) return null;
 
-  // 2. Discord User ID
+  // 2. Discord User ID or clean mention ID
   const cleanId = cleanQuery.replace(/[<@!>]/g, '');
   if (/^\d{17,20}$/.test(cleanId)) {
     const byId = await message.guild.members.fetch(cleanId).catch(() => null);
     if (byId) return byId;
   }
 
-  // 3. Username or Server Nickname search
   const search = cleanQuery.toLowerCase();
+
+  // 3. Search local cache first
   let found = message.guild.members.cache.find(m =>
-    m.user.username.toLowerCase() === search ||
-    (m.nickname && m.nickname.toLowerCase() === search) ||
-    (m.displayName && m.displayName.toLowerCase() === search)
+    m.user?.username?.toLowerCase() === search ||
+    m.user?.globalName?.toLowerCase() === search ||
+    m.displayName?.toLowerCase() === search ||
+    (m.nickname && m.nickname.toLowerCase() === search)
   );
+  if (found) return found;
 
-  if (!found) {
-    try {
-      const fetched = await message.guild.members.fetch({ query: cleanQuery, limit: 1 });
-      found = fetched.first();
-    } catch {}
-  }
+  // 4. REST search (works without privileged Gateway intents)
+  try {
+    const searchResults = await message.guild.members.search({ query: cleanQuery, limit: 5 });
+    if (searchResults && searchResults.size > 0) {
+      // Prioritize exact match if multiple returned
+      const exact = searchResults.find(m =>
+        m.user?.username?.toLowerCase() === search ||
+        m.user?.globalName?.toLowerCase() === search ||
+        m.displayName?.toLowerCase() === search ||
+        (m.nickname && m.nickname.toLowerCase() === search)
+      );
+      return exact || searchResults.first();
+    }
+  } catch {}
 
-  return found || null;
+  // 5. Gateway query fallback
+  try {
+    const fetched = await message.guild.members.fetch({ query: cleanQuery, limit: 1 });
+    if (fetched?.size > 0) return fetched.first();
+  } catch {}
+
+  return null;
 }
 
 export default {
@@ -47,7 +71,7 @@ export default {
     .setDescription('Dramatically eliminate another member!')
     .addUserOption(opt => opt.setName('target').setDescription('Member to eliminate').setRequired(true)),
 
-  async execute(context) {
+  async execute(context, args) {
     const isInteraction = Boolean(context.isChatInputCommand?.());
     const author = isInteraction ? context.user : context.author;
 
@@ -58,15 +82,24 @@ export default {
       targetMember = context.options.getMember('target');
       if (!targetMember) {
         const user = context.options.getUser('target');
-        if (user) targetMember = await context.guild.members.fetch(user.id).catch(() => null);
+        if (user && context.guild) {
+          targetMember = await context.guild.members.fetch(user.id).catch(() => null) || user;
+        }
       }
     } else {
-      // Safely extract the target word directly from message text
-      const words = (context.content || '').trim().split(/\s+/);
-      const targetQuery = words.slice(1).join(' ').trim();
+      // Robust query extraction for prefixes (array args, string args, or raw content)
+      let targetQuery = '';
+      if (Array.isArray(args) && args.length > 0) {
+        targetQuery = args.join(' ').trim();
+      } else if (typeof args === 'string' && args.trim()) {
+        targetQuery = args.trim();
+      } else if (context.content) {
+        const words = context.content.trim().split(/\s+/);
+        targetQuery = words.slice(1).join(' ').trim();
+      }
 
-      if (!targetQuery && (!context.mentions || context.mentions.members.size === 0)) {
-        return context.reply('⚠️ Please specify who to eliminate! (e.g. `mmkill @user`)');
+      if (!targetQuery && (!context.mentions || (context.mentions.members?.size === 0 && context.mentions.users?.size === 0))) {
+        return context.reply('⚠️ Please specify who to eliminate! (e.g. `_kill @user` or `_kill username`)');
       }
 
       targetMember = await resolveMember(context, targetQuery);
@@ -76,12 +109,12 @@ export default {
       }
     }
 
-    if (targetMember.id === author.id) {
+    const targetUser = targetMember.user || targetMember;
+
+    if (targetUser.id === author.id) {
       const msg = "You can't eliminate yourself! Stay alive! 🛡️";
       return isInteraction ? context.editReply(msg) : context.reply(msg);
     }
-
-    const targetUser = targetMember.user || targetMember;
 
     try {
       const endpoint = Math.random() > 0.5 ? 'shoot' : 'yeet';
@@ -89,14 +122,15 @@ export default {
         headers: { 'User-Agent': 'TitanBot/1.0 (DiscordBot)' }
       });
       const data = await res.json();
-      const gifUrl = data.results?.[0]?.url;
+      const gifUrl = data?.results?.[0]?.url;
 
       const line = phrases[Math.floor(Math.random() * phrases.length)](author, targetUser);
 
       const embed = new EmbedBuilder()
         .setColor('#e74c3c')
-        .setDescription(line)
-        .setImage(gifUrl || null);
+        .setDescription(line);
+
+      if (gifUrl) embed.setImage(gifUrl);
 
       if (isInteraction) {
         await context.editReply({ embeds: [embed] });
