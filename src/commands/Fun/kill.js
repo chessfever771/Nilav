@@ -10,29 +10,30 @@ const phrases = [
 async function resolveMember(message, query) {
   if (!message.guild) return null;
 
-  // 1. Direct @mention (check members, then fallback to users)
+  // 1. Direct @mention
   if (message.mentions?.members?.size > 0) {
     return message.mentions.members.first();
   }
   if (message.mentions?.users?.size > 0) {
-    const mentionedUser = message.mentions.users.first();
-    const fetched = await message.guild.members.fetch(mentionedUser.id).catch(() => null);
-    if (fetched) return fetched;
+    const user = message.mentions.users.first();
+    const member = await message.guild.members.fetch(user.id).catch(() => null);
+    return member || user;
   }
 
   const cleanQuery = (typeof query === 'string' ? query : '').trim();
   if (!cleanQuery) return null;
 
-  // 2. Discord User ID or clean mention ID
+  // 2. ID Lookup
   const cleanId = cleanQuery.replace(/[<@!>]/g, '');
   if (/^\d{17,20}$/.test(cleanId)) {
     const byId = await message.guild.members.fetch(cleanId).catch(() => null);
     if (byId) return byId;
+    const userById = await message.client.users.fetch(cleanId).catch(() => null);
+    if (userById) return userById;
   }
 
+  // 3. Cache lookup
   const search = cleanQuery.toLowerCase();
-
-  // 3. Search local cache first
   let found = message.guild.members.cache.find(m =>
     m.user?.username?.toLowerCase() === search ||
     m.user?.globalName?.toLowerCase() === search ||
@@ -41,11 +42,10 @@ async function resolveMember(message, query) {
   );
   if (found) return found;
 
-  // 4. REST search (works without privileged Gateway intents)
+  // 4. REST search (uncached/offline members)
   try {
     const searchResults = await message.guild.members.search({ query: cleanQuery, limit: 5 });
     if (searchResults && searchResults.size > 0) {
-      // Prioritize exact match if multiple returned
       const exact = searchResults.find(m =>
         m.user?.username?.toLowerCase() === search ||
         m.user?.globalName?.toLowerCase() === search ||
@@ -54,12 +54,6 @@ async function resolveMember(message, query) {
       );
       return exact || searchResults.first();
     }
-  } catch {}
-
-  // 5. Gateway query fallback
-  try {
-    const fetched = await message.guild.members.fetch({ query: cleanQuery, limit: 1 });
-    if (fetched?.size > 0) return fetched.first();
   } catch {}
 
   return null;
@@ -75,7 +69,8 @@ export default {
     const isInteraction = Boolean(context.isChatInputCommand?.());
     const author = isInteraction ? context.user : context.author;
 
-    let targetMember;
+    let targetMember = null;
+    let targetQuery = '';
 
     if (isInteraction) {
       await context.deferReply();
@@ -87,24 +82,36 @@ export default {
         }
       }
     } else {
-      // Robust query extraction for prefixes (array args, string args, or raw content)
-      let targetQuery = '';
-      if (Array.isArray(args) && args.length > 0) {
-        targetQuery = args.join(' ').trim();
-      } else if (typeof args === 'string' && args.trim()) {
-        targetQuery = args.trim();
-      } else if (context.content) {
-        const words = context.content.trim().split(/\s+/);
-        targetQuery = words.slice(1).join(' ').trim();
+      // 1. Direct mention priority
+      if (context.mentions?.members?.size > 0) {
+        targetMember = context.mentions.members.first();
+      } else if (context.mentions?.users?.size > 0) {
+        const user = context.mentions.users.first();
+        targetMember = await context.guild?.members.fetch(user.id).catch(() => null) || user;
       }
 
-      if (!targetQuery && (!context.mentions || (context.mentions.members?.size === 0 && context.mentions.users?.size === 0))) {
-        return context.reply('⚠️ Please specify who to eliminate! (e.g. `_kill @user` or `_kill username`)');
-      }
-
-      targetMember = await resolveMember(context, targetQuery);
-
+      // 2. Query extraction if no direct mention
       if (!targetMember) {
+        if (Array.isArray(args) && args.length > 0) {
+          targetQuery = args.join(' ').trim();
+        } else if (typeof args === 'string' && args.trim()) {
+          targetQuery = args.trim();
+        } else if (context.content) {
+          const raw = context.content.trim();
+          const words = raw.split(/\s+/);
+          targetQuery = words.length > 1 ? words.slice(1).join(' ').trim() : raw;
+        }
+
+        if (targetQuery) {
+          targetMember = await resolveMember(context, targetQuery);
+        }
+      }
+
+      // 3. Validation replies
+      if (!targetMember) {
+        if (!targetQuery) {
+          return context.reply('⚠️ Please specify who to eliminate! (e.g. `mmkill @user` or `mmkill username`)');
+        }
         return context.reply(`❌ Could not find any member matching **"${targetQuery}"** in this server.`);
       }
     }
