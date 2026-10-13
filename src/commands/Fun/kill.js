@@ -7,34 +7,37 @@ const phrases = [
   (u, t) => `Rest in peace <@${t.id}>... you had a good run! 🪦`
 ];
 
-async function resolveMember(message, query) {
-  if (!message.guild) return null;
+async function resolveMember(context, query) {
+  const msg = context.message || context;
+  const guild = context.guild || msg.guild;
+  if (!guild) return null;
 
-  // 1. Direct @mention
-  if (message.mentions?.members?.size > 0) {
-    return message.mentions.members.first();
+  const mentions = msg.mentions || context.mentions;
+  if (mentions?.members?.size > 0) {
+    return mentions.members.first();
   }
-  if (message.mentions?.users?.size > 0) {
-    const user = message.mentions.users.first();
-    const member = await message.guild.members.fetch(user.id).catch(() => null);
+  if (mentions?.users?.size > 0) {
+    const user = mentions.users.first();
+    const member = await guild.members.fetch(user.id).catch(() => null);
     return member || user;
   }
 
   const cleanQuery = (typeof query === 'string' ? query : '').trim();
   if (!cleanQuery) return null;
 
-  // 2. ID Lookup
   const cleanId = cleanQuery.replace(/[<@!>]/g, '');
   if (/^\d{17,20}$/.test(cleanId)) {
-    const byId = await message.guild.members.fetch(cleanId).catch(() => null);
+    const byId = await guild.members.fetch(cleanId).catch(() => null);
     if (byId) return byId;
-    const userById = await message.client.users.fetch(cleanId).catch(() => null);
-    if (userById) return userById;
+    const client = msg.client || context.client;
+    if (client) {
+      const userById = await client.users.fetch(cleanId).catch(() => null);
+      if (userById) return userById;
+    }
   }
 
-  // 3. Cache lookup
   const search = cleanQuery.toLowerCase();
-  let found = message.guild.members.cache.find(m =>
+  let found = guild.members.cache.find(m =>
     m.user?.username?.toLowerCase() === search ||
     m.user?.globalName?.toLowerCase() === search ||
     m.displayName?.toLowerCase() === search ||
@@ -42,9 +45,8 @@ async function resolveMember(message, query) {
   );
   if (found) return found;
 
-  // 4. REST search (uncached/offline members)
   try {
-    const searchResults = await message.guild.members.search({ query: cleanQuery, limit: 5 });
+    const searchResults = await guild.members.search({ query: cleanQuery, limit: 10 });
     if (searchResults && searchResults.size > 0) {
       const exact = searchResults.find(m =>
         m.user?.username?.toLowerCase() === search ||
@@ -54,6 +56,11 @@ async function resolveMember(message, query) {
       );
       return exact || searchResults.first();
     }
+  } catch {}
+
+  try {
+    const fetched = await guild.members.fetch({ query: cleanQuery, limit: 1 });
+    if (fetched && fetched.size > 0) return fetched.first();
   } catch {}
 
   return null;
@@ -67,7 +74,8 @@ export default {
 
   async execute(context, args) {
     const isInteraction = Boolean(context.isChatInputCommand?.());
-    const author = isInteraction ? context.user : context.author;
+    const author = isInteraction ? context.user : (context.author || context.user || context.message?.author);
+    const channel = context.channel || context.message?.channel;
 
     let targetMember = null;
     let targetQuery = '';
@@ -82,24 +90,36 @@ export default {
         }
       }
     } else {
-      // 1. Direct mention priority
-      if (context.mentions?.members?.size > 0) {
-        targetMember = context.mentions.members.first();
-      } else if (context.mentions?.users?.size > 0) {
-        const user = context.mentions.users.first();
-        targetMember = await context.guild?.members.fetch(user.id).catch(() => null) || user;
+      const msg = context.message || context;
+      const mentions = msg.mentions || context.mentions;
+
+      if (mentions?.members?.size > 0) {
+        targetMember = mentions.members.first();
+      } else if (mentions?.users?.size > 0) {
+        const user = mentions.users.first();
+        const guild = context.guild || msg.guild;
+        targetMember = await guild?.members.fetch(user.id).catch(() => null) || user;
       }
 
-      // 2. Query extraction if no direct mention
       if (!targetMember) {
         if (Array.isArray(args) && args.length > 0) {
           targetQuery = args.join(' ').trim();
+        } else if (Array.isArray(context.args) && context.args.length > 0) {
+          targetQuery = context.args.join(' ').trim();
         } else if (typeof args === 'string' && args.trim()) {
           targetQuery = args.trim();
-        } else if (context.content) {
-          const raw = context.content.trim();
-          const words = raw.split(/\s+/);
-          targetQuery = words.length > 1 ? words.slice(1).join(' ').trim() : raw;
+        } else if (typeof context.args === 'string' && context.args.trim()) {
+          targetQuery = context.args.trim();
+        } else {
+          const raw = (msg.content || context.content || '').trim();
+          if (raw) {
+            const words = raw.split(/\s+/);
+            if (words.length > 1) {
+              targetQuery = words.slice(1).join(' ').trim();
+            } else if (!words[0].toLowerCase().includes('kill')) {
+              targetQuery = raw;
+            }
+          }
         }
 
         if (targetQuery) {
@@ -107,12 +127,12 @@ export default {
         }
       }
 
-      // 3. Validation replies
       if (!targetMember) {
+        const replyFunc = (content) => (context.reply ? context.reply(content) : channel.send(content));
         if (!targetQuery) {
-          return context.reply('⚠️ Please specify who to eliminate! (e.g. `mmkill @user` or `mmkill username`)');
+          return replyFunc('⚠️ Please specify who to eliminate! (e.g. `mmkill @user` or `mmkill username`)');
         }
-        return context.reply(`❌ Could not find any member matching **"${targetQuery}"** in this server.`);
+        return replyFunc(`❌ Could not find any member matching **"${targetQuery}"** in this server.`);
       }
     }
 
@@ -120,7 +140,7 @@ export default {
 
     if (targetUser.id === author.id) {
       const msg = "You can't eliminate yourself! Stay alive! 🛡️";
-      return isInteraction ? context.editReply(msg) : context.reply(msg);
+      return isInteraction ? context.editReply(msg) : (context.reply ? context.reply(msg) : channel.send(msg));
     }
 
     try {
@@ -142,12 +162,12 @@ export default {
       if (isInteraction) {
         await context.editReply({ embeds: [embed] });
       } else {
-        await context.channel.send({ embeds: [embed] });
+        await channel.send({ embeds: [embed] });
       }
     } catch {
       const fallback = `*eliminated* <@${targetUser.id}>! 💀`;
       if (isInteraction) await context.editReply(fallback);
-      else await context.channel.send(fallback);
+      else await channel.send(fallback);
     }
   }
 };
