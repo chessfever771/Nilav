@@ -1,35 +1,21 @@
 [
   {
-    "name": "nexcloud-v4",
-    "host": "n3.nexcloud.in",
-    "port": 2026,
-    "password": "nexcloud",
-    "secure": false
+    "name": "Lavalink-Rocks-v4",
+    "host": "v4.lavalink.rocks",
+    "port": 443,
+    "password": "horizxon.tech",
+    "secure": true
   },
   {
-    "name": "g3v-v4",
-    "host": "lava.g3v.co.uk",
-    "port": 9008,
-    "password": "lavalinklol",
-    "secure": false
-  },
-  {
-    "name": "east112-v4",
-    "host": "157.254.192.15",
-    "port": 2333,
+    "name": "Jirayu-v4",
+    "host": "lavalink.jirayu.net",
+    "port": 13592,
     "password": "youshallnotpass",
     "secure": false
   },
   {
-    "name": "serenetia-ssl",
-    "host": "lavalinkv4.serenetia.com",
-    "port": 443,
-    "password": "https://seretia.link/discord",
-    "secure": true
-  },
-  {
-    "name": "jirayu-ssl",
-    "host": "lavalink.jirayu.net",
+    "name": "Huntolls-v4",
+    "host": "lavalink-v4.huntolls-bot.xyz",
     "port": 443,
     "password": "youshallnotpass",
     "secure": true
