@@ -19,5 +19,33 @@
     "port": 443,
     "password": "youshallnotpass",
     "secure": true
+  },
+  {
+    "name": "GDjkhp-NodeLink",
+    "host": "nodelink.gdjkhp.com",
+    "port": 443,
+    "password": "youshallnotpass",
+    "secure": true
+  },
+  {
+    "name": "Nazha-Lavalink",
+    "host": "lavalink.nazha.online",
+    "port": 443,
+    "password": "nazhafreelava",
+    "secure": true
+  },
+  {
+    "name": "Nyx-NodeLink",
+    "host": "sg1-nodelink.nyxbot.app",
+    "port": 3000,
+    "password": "nyxbot.app/support",
+    "secure": false
+  },
+  {
+    "name": "NexCloud-v4",
+    "host": "n3.nexcloud.in",
+    "port": 2026,
+    "password": "nexcloud",
+    "secure": false
   }
 ]
