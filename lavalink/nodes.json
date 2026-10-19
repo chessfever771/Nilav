@@ -1,26 +1,5 @@
 [
   {
-    "name": "Lavalink-Rocks-v4",
-    "host": "v4.lavalink.rocks",
-    "port": 443,
-    "password": "horizxon.tech",
-    "secure": true
-  },
-  {
-    "name": "Jirayu-v4",
-    "host": "lavalink.jirayu.net",
-    "port": 13592,
-    "password": "youshallnotpass",
-    "secure": false
-  },
-  {
-    "name": "Huntolls-v4",
-    "host": "lavalink-v4.huntolls-bot.xyz",
-    "port": 443,
-    "password": "youshallnotpass",
-    "secure": true
-  },
-  {
     "name": "GDjkhp-NodeLink",
     "host": "nodelink.gdjkhp.com",
     "port": 443,
