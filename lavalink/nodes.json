@@ -5,7 +5,7 @@
   "secure": false
 },
 {
-  Host : lavalinkv4.serenetia.com
-Port : 443
-Password : "https://seretia.link/discord"
-Secure : true}]
+  "host" : "lavalinkv4.serenetia.com",
+"port" : 443,
+"password" : "https://seretia.link/discord",
+"secure" : true}]
