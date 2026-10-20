@@ -1,6 +1,11 @@
-{
+[{
   "host": "free-lava.heavencloud.in",
   "port": 4000,
   "password": "heavencloud.in",
   "secure": false
-}
+},
+{
+  Host : lavalinkv4.serenetia.com
+Port : 443
+Password : "https://seretia.link/discord"
+Secure : true}]
