@@ -1,23 +1,23 @@
 [
   {
-    "name": "HeavenCloud-IN",
-    "host": "in-v4.heavencloud.in",
-    "port": 2333,
-    "password": "https://heavencloud.in",
-    "secure": false
+    "name": "Lavalink-Rocks-v4",
+    "host": "v4.lavalink.rocks",
+    "port": 443,
+    "password": "horizxon.tech",
+    "secure": true
   },
   {
-    "name": "HeavenCloud-US",
-    "host": "us-v4.heavencloud.in",
-    "port": 2333,
-    "password": "https://heavencloud.in",
-    "secure": false
+    "name": "Serenetia-Node-v4",
+    "host": "lavalinkv4.serenetia.com",
+    "port": 443,
+    "password": "https://dsc.gg/ajidevserver",
+    "secure": true
   },
   {
-    "name": "HeavenCloud-DE",
-    "host": "de-v4.heavencloud.in",
-    "port": 2333,
-    "password": "https://heavencloud.in",
+    "name": "HeavenCloud-Public",
+    "host": "free-lava.heavencloud.in",
+    "port": 4000,
+    "password": "heavencloud.in",
     "secure": false
   }
 ]
