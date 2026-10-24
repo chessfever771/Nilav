@@ -1,55 +1,27 @@
 [
   {
-    "name": "Nazha-Main-SSL",
-    "host": "lavalink.nazha.online",
+    "name": "Lavalink-Rocks-LavaSrc",
+    "host": "v4.lavalink.rocks",
     "port": 443,
-    "password": "nazhafreelava",
+    "password": "horizxon.tech",
     "secure": true
   },
   {
-    "name": "Nazha-SG1-SSL",
-    "host": "sg-1.nazha.online",
-    "port": 443,
-    "password": "https://discord.gg/XeSCnk57ZF",
-    "secure": true
-  },
-  {
-    "name": "Jirayu-SSL",
-    "host": "lavalink.jirayu.net",
-    "port": 443,
-    "password": "youshallnotpass",
-    "secure": true
-  },
-  {
-    "name": "Trinium-v4-SSL",
-    "host": "lavalink-v4.triniumhost.com",
-    "port": 443,
-    "password": "free",
-    "secure": true
-  },
-  {
-    "name": "MilloHost-SSL",
-    "host": "lava-v4.millohost.my.id",
-    "port": 443,
-    "password": "https://discord.gg/mjS5J2K3ep",
-    "secure": true
-  },
-  {
-    "name": "Serenetia-Updated-SSL",
+    "name": "Serenetia-LavaSrc",
     "host": "lavalinkv4.serenetia.com",
     "port": 443,
     "password": "https://seretia.link/discord",
     "secure": true
   },
   {
-    "name": "HeavenCloud-Public",
-    "host": "free-lava.heavencloud.in",
-    "port": 4000,
-    "password": "heavencloud.in",
-    "secure": false
+    "name": "Trinium-LavaSrc",
+    "host": "lavalink-v4.triniumhost.com",
+    "port": 443,
+    "password": "free",
+    "secure": true
   },
   {
-    "name": "G3V-Lava",
+    "name": "G3V-LavaSrc",
     "host": "lava.g3v.co.uk",
     "port": 9008,
     "password": "lavalinklol",
