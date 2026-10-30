@@ -1,4 +1,12 @@
 [
+ {
+    "name": "My-AppleMusic-Node",
+    "host": "yourusername-nilav-lavalink.hf.space",
+    "port": 443,
+    "password": "chooseYourOwnSecretPassword123",
+    "secure": true
+  },
+  
   {
     "name": "LexNet-Lavalink",
     "host": "lavalink.lexnet.cc",
