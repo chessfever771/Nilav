@@ -1,39 +1,48 @@
 server:
-  port: 2333
+  port: 7860
   address: 0.0.0.0
 
 lavalink:
+  plugins:
+    - dependency: "com.github.topi314.lavasrc:lavasrc-plugin:4.4.1"
+      snapshot: false
+    - dependency: "dev.lavalink.youtube:youtube-plugin:1.17.0"
+      snapshot: false
   server:
-    password: "yoursecretpassword" # Change this to a secure passphrase
+    password: "chooseYourOwnSecretPassword123"
     sources:
-      youtube: true
+      youtube: false
       bandcamp: true
       soundcloud: true
       twitch: true
       vimeo: true
       http: true
       local: false
-    filters:
-      volume: true
-      equalizer: true
-      karaoke: true
-      timescale: true
-      tremolo: true
-      vibrato: true
-      distortion: true
-      rotation: true
-      channelMix: true
-      lowPass: true
     bufferDurationMs: 400
     frameBufferDurationMs: 5000
     opusEncodingQuality: 10
     resamplingQuality: LOW
     trackStuckThresholdMs: 10000
-    useSeekGhosting: true
-    playerUpdateInterval: 5
-    youtubeSearchEnabled: true
-    soundcloudSearchEnabled: true
-    gc-warnings: true
+
+plugins:
+  youtube:
+    enabled: true
+    allowSearch: true
+    allowDirectVideoIds: true
+    allowDirectPlaylistIds: true
+  lavasrc:
+    providers:
+      - "ytsearch:\"%ISRC%\"" # Looks up track on YouTube by ISRC first
+      - "ytmsearch:%QUERY%"   # Falls back to YouTube Music query
+      - "scsearch:%QUERY%"    # Falls back to SoundCloud if YouTube fails
+    sources:
+      spotify: false
+      applemusic: true
+      deezer: false
+      yandexmusic: false
+    applemusic:
+      countryCode: "US"
+      mediaAPIToken: "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiIsImtpZCI6IldlYlBsYXlLaWQifQ.eyJpc3MiOiJBTVBXZWJQbGF5IiwiaWF0IjoxNzkyNzgwNTM0LCJleHAiOjE3OTg4Mjg1MzQsInJvb3RfaHR0cHNfb3JpZ2luIjpbImFwcGxlLmNvbSJdfQ.wcf_7U-zcgUjY2L8d4HWFkdxP1YSJCkkqEpEtVPKpRARrlaag0DHyIpRcoUEWZU8kJlvx5Q7ZNp04OabfuiuAw"
 
 logging:
   file:
