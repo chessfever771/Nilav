@@ -1,9 +1,37 @@
 [
- {
-    "name": "My-AppleMusic-Node",
-    "host": "yourusername-nilav-lavalink.hf.space",
+  {
+    "name": "NyxBot-SG1-AppleMusic",
+    "host": "sg1-nodelink.nyxbot.app",
+    "port": 3000,
+    "password": "nyxbot.app/support",
+    "secure": false
+  },
+  {
+    "name": "NyxBot-SG2-AppleMusic",
+    "host": "sg2-nodelink.nyxbot.app",
+    "port": 3000,
+    "password": "nyxbot.app/support",
+    "secure": false
+  },
+  {
+    "name": "NexCloud-AppleMusic",
+    "host": "n3.nexcloud.in",
+    "port": 2026,
+    "password": "nexcloud",
+    "secure": false
+  },
+  {
+    "name": "G3V-LavaSrc",
+    "host": "lava.g3v.co.uk",
+    "port": 9008,
+    "password": "lavalinklol",
+    "secure": false
+  },
+  {
+    "name": "Nazha-Main-SSL",
+    "host": "lavalink.nazha.online",
     "port": 443,
-    "password": "chooseYourOwnSecretPassword123",
+    "password": "nazhafreelava",
     "secure": true
   }
 ]
