@@ -5,48 +5,5 @@
     "port": 443,
     "password": "chooseYourOwnSecretPassword123",
     "secure": true
-  },
-  
-  {
-    "name": "LexNet-Lavalink",
-    "host": "lavalink.lexnet.cc",
-    "port": 443,
-    "password": "lexnet",
-    "secure": true
-  },
-  {
-    "name": "Oops-WTF",
-    "host": "lavalink.oops.wtf",
-    "port": 443,
-    "password": "www.oops.wtf",
-    "secure": true
-  },
-  {
-    "name": "Paniek-FreeLavalink",
-    "host": "lavalink.paniek.de",
-    "port": 443,
-    "password": "freelavalink.paniek.de",
-    "secure": true
-  },
-  {
-    "name": "AjieBlogs-EU",
-    "host": "lava-v4.ajieblogs.eu.org",
-    "port": 443,
-    "password": "https://dsc.gg/ajidevserver",
-    "secure": true
-  },
-  {
-    "name": "Jirayu-Direct",
-    "host": "lavalink.jirayu.net",
-    "port": 13592,
-    "password": "youshallnotpass",
-    "secure": false
-  },
-  {
-    "name": "Trinium-Alt",
-    "host": "lavalink-v4.triniumhost.com",
-    "port": 443,
-    "password": "free",
-    "secure": true
   }
 ]
