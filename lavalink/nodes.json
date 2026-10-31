@@ -1,37 +1,16 @@
 [
   {
-    "name": "NyxBot-SG1-AppleMusic",
-    "host": "sg1-nodelink.nyxbot.app",
-    "port": 3000,
-    "password": "nyxbot.app/support",
-    "secure": false
-  },
-  {
-    "name": "NyxBot-SG2-AppleMusic",
-    "host": "sg2-nodelink.nyxbot.app",
-    "port": 3000,
-    "password": "nyxbot.app/support",
-    "secure": false
-  },
-  {
-    "name": "NexCloud-AppleMusic",
-    "host": "n3.nexcloud.in",
-    "port": 2026,
-    "password": "nexcloud",
-    "secure": false
-  },
-  {
-    "name": "G3V-LavaSrc",
-    "host": "lava.g3v.co.uk",
-    "port": 9008,
-    "password": "lavalinklol",
-    "secure": false
-  },
-  {
-    "name": "Nazha-Main-SSL",
-    "host": "lavalink.nazha.online",
+    "name": "AjieBlogs-v4",
+    "host": "lava-v4.ajieblogs.eu.org",
     "port": 443,
-    "password": "nazhafreelava",
+    "password": "https://dsc.gg/ajidevserver",
+    "secure": true
+  },
+  {
+    "name": "Serenetia-v4",
+    "host": "lavalink-v4.serenetia.com",
+    "port": 443,
+    "password": "serenetia.com",
     "secure": true
   }
 ]
