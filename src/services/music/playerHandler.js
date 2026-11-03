@@ -223,16 +223,21 @@ export function setupPlayerHandler(client) {
         }
     });
 
-    client.riffy.on('trackError', async (player, track, payload) => {
-        logger.error(`Track error in ${player.guildId} for "${track?.info?.title}":`, payload?.error || payload);
-        const guildData = getGuildMusicData(player.guildId);
-        if (guildData.playerChannelId) {
-            const channel = client.channels.cache.get(guildData.playerChannelId);
-            if (channel) {
-                channel.send(`Failed to play **${track?.info?.title || 'track'}**. Skipping...`).catch(() => null);
-            }
+   client.riffy.on('trackError', async (player, track, payload) => {
+    logger.error(`Track error in ${player.guildId} for "${track?.info?.title}":`, payload?.error || payload);
+    const guildData = getGuildMusicData(player.guildId);
+    if (guildData.playerChannelId) {
+        const channel = client.channels.cache.get(guildData.playerChannelId);
+        if (channel) {
+            channel.send(`Failed to play **${track?.info?.title || 'track'}**. Skipping...`).catch(() => null);
         }
-    });
+    }
+
+    // Prevent empty queue crash:
+    if (!player.queue || player.queue.length === 0) {
+        player.destroy();
+    }
+});
 
     client.riffy.on('trackStuck', async (player, track, payload) => {
         logger.warn(`Track stuck in ${player.guildId} for "${track?.info?.title}" (${payload?.thresholdMs}ms)`);
