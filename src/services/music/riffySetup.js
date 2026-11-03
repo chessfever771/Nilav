@@ -30,7 +30,7 @@ export function initializeMusic(client) {
             const shardId = Number((BigInt(guildId) >> 22n) % BigInt(shardCount));
             client.ws.shards.get(shardId)?.send(payload);
         },
-        defaultSearchPlatform: lavalinkConfig.defaultSearchPlatform,
+        defaultSearchPlatform: "scsearch",
         restVersion: lavalinkConfig.restVersion,
         bypassChecks: {
             nodeFetchInfo: true,
