@@ -1,4 +1,4 @@
-[
+export default [
   {
     name: 'Horizxon-Mumbai-v4',
     host: 'lava4.horizxon.studio',
