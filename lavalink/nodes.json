@@ -1,7 +1,7 @@
 [
   {
     "name": "MyPrivateRenderLavalink",
-    "host": "https://my-lavalink-gz56.onrender.com",
+    "host": "my-lavalink-gz56.onrender.com",
     "port": 443,
     "password": "nilavsupersecretpassword",
     "secure": true
