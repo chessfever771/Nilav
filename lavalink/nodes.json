@@ -1,30 +1,23 @@
 [
   {
-    "name": "Horizxon-Mumbai-v4",
-    "host": "lava4.horizxon.studio",
-    "port": 80,
-    "password": "horizxon.studio",
-    "secure": false
+    "name": "TriniumHost-v4",
+    "host": "lavalink-v4.triniumhost.com",
+    "port": 443,
+    "password": "free",
+    "secure": true
   },
   {
-    "name": "Horizxon-Singapore-v4",
-    "host": "lava1.horizxon.studio",
-    "port": 80,
-    "password": "horizxon.studio",
-    "secure": false
-  },
-  {
-    "name": "Horizxon-Frankfurt-v4",
-    "host": "lava3.horizxon.studio",
-    "port": 80,
-    "password": "horizxon.studio",
-    "secure": false
-  },
-  {
-    "name": "AjieBlogs-v4-SSL",
-    "host": "lava-v4.ajieblogs.eu.org",
+    "name": "Serenetia-v4",
+    "host": "lavalinkv4.serenetia.com",
     "port": 443,
     "password": "https://dsc.gg/ajidevserver",
+    "secure": true
+  },
+  {
+    "name": "Jirayu-v4",
+    "host": "lavalink.jirayu.net",
+    "port": 443,
+    "password": "youshallnotpass",
     "secure": true
   }
 ]
