@@ -1,30 +1,30 @@
-export default [
+[
   {
-    name: 'Horizxon-Mumbai-v4',
-    host: 'lava4.horizxon.studio',
-    port: 80,
-    password: 'horizxon.studio',
-    secure: false
+    "name": "Horizxon-Mumbai-v4",
+    "host": "lava4.horizxon.studio",
+    "port": 80,
+    "password": "horizxon.studio",
+    "secure": false
   },
   {
-    name: 'Horizxon-Singapore-v4',
-    host: 'lava1.horizxon.studio',
-    port: 80,
-    password: 'horizxon.studio',
-    secure: false
+    "name": "Horizxon-Singapore-v4",
+    "host": "lava1.horizxon.studio",
+    "port": 80,
+    "password": "horizxon.studio",
+    "secure": false
   },
   {
-    name: 'Horizxon-Frankfurt-v4',
-    host: 'lava3.horizxon.studio',
-    port: 80,
-    password: 'horizxon.studio',
-    secure: false
+    "name": "Horizxon-Frankfurt-v4",
+    "host": "lava3.horizxon.studio",
+    "port": 80,
+    "password": "horizxon.studio",
+    "secure": false
   },
   {
-    name: 'AjieBlogs-v4-SSL',
-    host: 'lava-v4.ajieblogs.eu.org',
-    port: 443,
-    password: 'https://dsc.gg/ajidevserver',
-    secure: true
+    "name": "AjieBlogs-v4-SSL",
+    "host": "lava-v4.ajieblogs.eu.org",
+    "port": 443,
+    "password": "https://dsc.gg/ajidevserver",
+    "secure": true
   }
-];
+]
